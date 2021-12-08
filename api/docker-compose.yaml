@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.3"
 services:
   db:
     image: mysql
@@ -6,11 +6,12 @@ services:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=tlc
-      - MYSQL_USER=tlc
-      - MYSQL_PASSWORD=tlc
+      - MYSQL_DATABASE=tlcKarim
+      - MYSQL_USER=tlcKarim
+      - MYSQL_PASSWORD=tlcKarim
+      
   etherpad:
-    image: etherpad/etherpad:stable
+    image: etherpad/etherpad:1.8
     ports:
       - "9001:9001"
     volumes:
@@ -20,3 +21,24 @@ services:
     restart: always
     ports:
       - "2525:25"
+
+  myreverse:
+    image: bunkerity/bunkerized-nginx
+    depends_on:
+      - etherpad
+    ports:
+      - 80:8080
+      - 443:8443
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+    environment:
+      - SERVER_NAME=www.example.com
+      - SERVE_FILES=no
+      - DISABLE_DEFAULT_SERVER=yes
+      - REDIRECT_HTTP_TO_HTTPS=yes
+      - AUTO_LETS_ENCRYPT=yes
+      - USE_PROXY_CACHE=yes
+      - USE_GZIP=yes
+      - USE_REVERSE_PROXY=yes
+      - REVERSE_PROXY_URL=/
+      - REVERSE_PROXY_HOST=http://myghost:2368/
