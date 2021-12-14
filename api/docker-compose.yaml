@@ -6,9 +6,9 @@ services:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=tlcKarim
-      - MYSQL_USER=tlcKarim
-      - MYSQL_PASSWORD=tlcKarim
+      - MYSQL_DATABASE=tlc
+      - MYSQL_USER=tlc
+      - MYSQL_PASSWORD=tlc
       
   etherpad:
     image: etherpad/etherpad:1.8
@@ -24,6 +24,7 @@ services:
 
   myreverse:
     image: bunkerity/bunkerized-nginx
+    restart: always
     depends_on:
       - etherpad
     ports:
@@ -32,13 +33,21 @@ services:
     volumes:
       - ./letsencrypt:/etc/letsencrypt
     environment:
-      - SERVER_NAME=www.example.com
+      - SERVER_NAME="roneul.diverse-team.fr"
       - SERVE_FILES=no
-      - DISABLE_DEFAULT_SERVER=yes
+      - DISABLE_DEFAULT_SERVER=non
       - REDIRECT_HTTP_TO_HTTPS=yes
       - AUTO_LETS_ENCRYPT=yes
       - USE_PROXY_CACHE=yes
       - USE_GZIP=yes
       - USE_REVERSE_PROXY=yes
       - REVERSE_PROXY_URL=/
-      - REVERSE_PROXY_HOST=http://myghost:2368/
+      - HTTP2=non
+      - REVERSE_PROXY_HOST=roneul.diverse-team.fr
+  myadmin:
+    image: phpmyadmin
+    ports:
+     - "8082:80"   
+    environment:
+    # pour phpmyadmin url externe
+      - PMA_ABSOLUTE_URI=https://phpmyadmin.diverse-team.fr

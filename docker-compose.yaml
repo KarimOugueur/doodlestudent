@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.3"
 services:
   db:
     image: mysql
@@ -10,7 +10,7 @@ services:
       - MYSQL_USER=tlc
       - MYSQL_PASSWORD=tlc
   etherpad:
-    image: etherpad/etherpad:stable
+    image: etherpad/etherpad:1.8
     ports:
       - "9001:9001"
     volumes:
@@ -19,4 +19,44 @@ services:
     image: bytemark/smtp
     restart: always
     ports:
-      - "2525:25"
+      - "2524:24"
+  api:
+    image : karim/doodleback
+    ports :
+      - 82:80
+    volumes :
+      - ./api:/opt/doodleback
+
+  front :
+    image: karim/doodlefront
+    ports: 
+      - 81:80
+     
+  myreverse:
+    image: bunkerity/bunkerized-nginx
+    restart: always
+    depends_on:
+      - etherpad
+    ports:
+      - 80:8080
+      - 443:8443
+    volumes:
+      - ./nginx:/home/ougueur/Bureau/M2_ILA/TLC/doodlestudent/nginx.conf
+    environment:
+      - SERVER_NAME="localhost"
+      - SERVE_FILES=no
+      - DISABLE_DEFAULT_SERVER=yes
+      - REDIRECT_HTTP_TO_HTTPS=no
+      - AUTO_LETS_ENCRYPT=no
+      - USE_PROXY_CACHE=yes
+      - USE_GZIP=yes
+      - USE_REVERSE_PROXY=yes
+      - REVERSE_PROXY_URL=/
+      - REVERSE_PROXY_HOST=
+  myadmin:
+    image: phpmyadmin
+    #ports:
+    #- "8082:80"
+    environment:
+    # pour phpmyadmin url externe
+      - PMA_ABSOLUTE_URI=https://phpmyadmin.diverse-team.fr

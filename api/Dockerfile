@@ -18,9 +18,8 @@ RUN git clone https://github.com/KarimOugueur/doodlestudent.git
 
 WORKDIR /doodlestudent/api
 
-
 RUN mvn clean package -Dquarkus.package.type=uber-jar -Dmaven.test.skip=true
 
-EXPOSE 9002
+EXPOSE 9001
 
-CMD ["java -jar target/code-with-quarkus-1.0.0-SNAPSHOT-runner.jar"]
+CMD ["java", "-jar", "/doodlestudent/api/target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar"]
