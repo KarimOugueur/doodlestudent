@@ -1,0 +1,30 @@
+stages:
+  - deployment
+  - build
+  - tests
+
+variables:
+  $DOCKER_AUTH_CONFIG: karimogr
+
+build:
+  stage: build
+  script:
+    - ls
+    - echo "Building application..."
+    - cd api
+    - mvn package
+    - rake
+
+tests:
+  stage: tests
+  
+  script:
+    - echo "Run unit tests..."
+    - mvn test
+
+deployment:
+  stage: deployment
+  script:
+    - docker login
+    - sudo -s docker-compose down
+    - sudo -s docker-compose up 
