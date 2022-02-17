@@ -8,6 +8,7 @@ variables:
 
 build:
   stage: build
+  runs-on: self-hosted
   script:
     - ls
     - echo "Building application..."
@@ -17,13 +18,14 @@ build:
 
 tests:
   stage: tests
-  
+  runs-on: self-hosted
   script:
     - echo "Run unit tests..."
     - mvn test
 
 deployment:
   stage: deployment
+  runs-on: self-hosted
   script:
     - docker login
     - sudo -s docker-compose down
