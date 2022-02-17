@@ -1,9 +1,28 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: build
+      
+
+  publish:
+    needs: [build]
+    runs-on: self-hosted
+    environment: production
+    steps:
+      - name: publish
+      
+
 stages:
   - deployment
   - build
   - tests
 
-on: [push]
 
 variables:
   $DOCKER_AUTH_CONFIG: karimogr
