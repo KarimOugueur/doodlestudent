@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu as builder
 
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
@@ -22,3 +22,7 @@ WORKDIR /doodlestudent/front
 
 RUN npm update
 RUN npm run build
+
+
+FROM nginx
+COPY --from=builder /doodlestudent/front/dist/tlcfront /usr/share/nginx/html

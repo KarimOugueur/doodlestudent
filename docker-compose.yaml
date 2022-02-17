@@ -2,61 +2,75 @@ version: "3.3"
 services:
   db:
     image: mysql
-    ports:
-      - "3306:3306"
+#    ports:
+#      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=tlc
       - MYSQL_USER=tlc
       - MYSQL_PASSWORD=tlc
   etherpad:
-    image: etherpad/etherpad:1.8
-    ports:
-      - "9001:9001"
+    image: etherpad/etherpad:develop
+#    ports:
+#      - "9001:9001"
     volumes:
-      - ./APIKEY.txt:/opt/etherpad-lite/APIKEY.txt
+      - ./api/APIKEY.txt:/opt/etherpad-lite/APIKEY.txt
   mail:
     image: bytemark/smtp
     restart: always
-    ports:
-      - "2524:24"
+#    ports:
+#      - "2524:24"
   api:
     image : karim/doodleback
-    ports :
-      - 82:80
+#    ports :
+#      - "8081:8080"
     volumes :
       - ./api:/opt/doodleback
+    restart: always
+    environment:
+      - quarkus.datasource.username=tlc
+      - quarkus.datasource.password=tlc
+      - quarkus.datasource.jdbc.url=jdbc:mysql://db:3306/tlc?useUnicode=true&serverTimezone=Europe/Paris
+      - doodle.usepad=true
+      - doodle.internalPadUrl=http://etherpad:9001/
+      - doodle.externalPadUrl=http://pad.tlc.fr:8080/
 
   front :
     image: karim/doodlefront
-    ports: 
-      - 81:80
-     
+#    ports: 
+#      - 8082:80
+
   myreverse:
     image: bunkerity/bunkerized-nginx
     restart: always
     depends_on:
       - etherpad
     ports:
-      - 80:8080
+      - 8080:8080
       - 443:8443
     volumes:
-      - ./nginx:/home/ougueur/Bureau/M2_ILA/TLC/doodlestudent/nginx.conf
+      - ./nginx.conf:/server-confs/nginx.conf
+      
     environment:
-      - SERVER_NAME="localhost"
+      - SERVER_NAME=doodle.tlc.fr pad.tlc.fr myadmin.tlc.fr
       - SERVE_FILES=no
+      - MULTISITE=yes
       - DISABLE_DEFAULT_SERVER=yes
       - REDIRECT_HTTP_TO_HTTPS=no
       - AUTO_LETS_ENCRYPT=no
-      - USE_PROXY_CACHE=yes
-      - USE_GZIP=yes
-      - USE_REVERSE_PROXY=yes
-      - REVERSE_PROXY_URL=/
-      - REVERSE_PROXY_HOST=
+      # Transmission de l'IP publique vers les containers
+      - PROXY_REAL_IP=yes
+      # redirect du 80 vers 443 automatique
+      - USE_LIMIT_REQ=no
+      # Désactivation http2
+      - HTTP2=no
+      # Paramétrage des entêtes http
+#      - FEATURE_POLICY=accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; encrypted-media 'none'; fullscreen 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none'; picture-in-picture 'none'; speaker 'none'; sync-xhr 'self'; usb 'none'; vibrate 'none'; vr 'none'
+
   myadmin:
     image: phpmyadmin
-    #ports:
-    #- "8082:80"
+#    ports:
+#      - 8085:80
     environment:
     # pour phpmyadmin url externe
       - PMA_ABSOLUTE_URI=https://phpmyadmin.diverse-team.fr
