@@ -16,7 +16,6 @@ jobs:
     environment: production
     steps:
       - name: publish
-      
 
 stages:
   - deployment
